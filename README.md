@@ -1,1 +1,183 @@
-# sssss
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .box {
+      margin: 100px auto;
+      width: 360px;
+      height: 420px;
+      border: 10px solid #000;
+      border-radius: 20px;
+      background-color: #b7d4a8;
+      position: relative;
+    }
+
+    .box .caozuo {
+      position: absolute;
+      bottom: 25px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .box .stage {
+      position: relative;
+      width: 304px;
+      height: 304px;
+      margin: 0 auto;
+      border: 2px solid #000;
+      margin-top: 20px;
+    }
+
+    .box .stage .food {
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      top: 20px;
+      left: 30px;
+    }
+
+    .box .stage .she div {
+      width: 10px;
+      height: 10px;
+      background-color: #000;
+      position: absolute;
+      border: 1px solid #b7d4a8;
+    }
+
+    .box .info {
+      display: flex;
+      justify-content: space-between;
+      margin: 30px 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 大盒子 -->
+  <div class="box">
+    <!-- 游戏舞台 -->
+    <div class="stage">
+      <!-- 食物 -->
+      <div class="food"></div>
+      <!-- 蛇 -->
+      <div class="she">
+        <div></div>
+      </div>
+    </div>
+    <!-- 分数等级 -->
+    <div class="info">
+      <div class="fenshu">SCORE:<span>0</span></div>
+      <div class="level">LEVEL:<span>0</span></div>
+    </div>
+    <div class="caozuo">↑↓←→移动</div>
+  </div>
+
+  <script>
+    const she = document.querySelector('.she');
+    const shes = she.getElementsByTagName("div")
+    let dir;
+    let keyActive = true;
+    const fenshu = document.querySelector('.fenshu span');
+    const level = document.querySelector('.level span');
+    let fen = 0;
+    let le = 0;
+    const keyArr = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    const food = document.querySelector('.food');
+    function changeFood() {
+      food.style.left = Math.floor(Math.random() * 30) * 10 + 'px';
+      food.style.top = Math.floor(Math.random() * 30) * 10 + 'px';
+    }
+    changeFood()
+    document.addEventListener('keydown', function (e) {
+      if (keyActive === true && keyArr.includes(e.key)) {
+        if (shes.length < 2) {
+          dir = e.key;
+        } else {
+          if (dir === "ArrowUp" && e.key !== "ArrowDown") {
+            dir = e.key;
+          }
+          else if (dir === "ArrowDown" && e.key !== "ArrowUp") {
+            dir = e.key;
+          }
+          else if (dir === "ArrowLeft" && e.key !== "ArrowRight") {
+            dir = e.key;
+          }
+          else if (dir === "ArrowRight" && e.key !== "ArrowLeft") {
+            dir = e.key;
+          }
+        }
+      }
+      keyActive = false;
+    })
+    setTimeout(function move() {
+      const shetou = shes[0];
+      let x = shetou.offsetLeft;
+      let y = shetou.offsetTop;
+
+      switch (dir) {
+        case 'ArrowUp':
+          y = y - 10;
+          break;
+        case 'ArrowDown':
+          y = y + 10;
+          break;
+        case 'ArrowLeft':
+          x = x - 10;
+          break;
+        case 'ArrowRight':
+          x = x + 10;
+          break;
+        default:
+          break;
+      }
+
+      if (shetou.offsetTop === food.offsetTop && shetou.offsetLeft === food.offsetLeft) {
+
+        changeFood()
+        she.insertAdjacentHTML('beforeend', '<div></div>')
+        fen++
+        fenshu.textContent = fen
+        if (fen % 10 === 0 && le < 10) {
+          le++
+          level.textContent = le
+        }
+      }
+      if (x < 0 || x > 290 || y < 0 || y > 290) {
+        alert("就这？给你机会你也不中用啊！")
+        return
+      }
+
+      for (let i = 1; i < shes.length - 1; i++) {
+        if (shes[i].offsetLeft === x && shes[i].offsetTop === y) {
+          alert("食屎啦你")
+          return
+        }
+      }
+
+
+
+      const shewei = shes[shes.length - 1];
+      shewei.style.left = x + 'px';
+      shewei.style.top = y + 'px';
+      she.insertAdjacentElement('afterbegin', shewei)
+      keyActive = true;
+
+      setTimeout(move, 300 - le * 28)
+    }, 300)
+
+  </script>
+</body>
+
+</html>
